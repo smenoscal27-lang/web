@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DesignHub — Plataforma de Inspiración y Paletas para Diseñadores</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="DesignHub es una plataforma interactiva para diseñadores que integra clima local adaptativo, galería de inspiración de Unsplash y generador de paletas cromáticas armónicas.">
+  <meta name="author" content="DesignHub Team">
+  <meta name="theme-color" content="#6366f1">
+  
+  <!-- Google Fonts: Outfit for clean, modern geometry -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons for premium visual style -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Alertas de archivos faltantes en despliegue -->
+  <div id="css-missing-alert" style="background: #fee2e2; color: #991b1b; padding: 20px; text-align: center; font-family: system-ui, sans-serif; border: 2px solid #ef4444; margin: 20px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; z-index: 9999; position: relative;">
+    ⚠️ Error: No se cargó el archivo de diseño <code>styles.css</code>. <br>
+    <span style="font-weight: normal; font-size: 0.95rem;">Asegúrate de subir el archivo <code>styles.css</code> a la raíz de tu repositorio en GitHub para activar el diseño.</span>
+  </div>
+
+  <div id="js-missing-alert" style="background: #fffbeb; color: #92400e; padding: 20px; text-align: center; font-family: system-ui, sans-serif; border: 2px solid #f59e0b; margin: 20px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; z-index: 9998; position: relative;">
+    ⚠️ Error: No se cargaron los archivos de lógica (JavaScript). <br>
+    <span style="font-weight: normal; font-size: 0.95rem;">Asegúrate de subir los archivos <code>app.js</code>, <code>weather.js</code>, <code>gallery.js</code> y <code>colors.js</code> a la raíz de tu repositorio en GitHub.</span>
+  </div>
+
+  <!-- Main Container -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <i data-lucide="sparkles" class="logo-icon"></i>
+          <span>Design<span class="highlight">Hub</span></span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-target="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-target="inspiration">
+          <i data-lucide="image"></i>
+          <span>Inspiración</span>
+        </button>
+        <button class="nav-item" data-target="palettes">
+          <i data-lucide="palette"></i>
+          <span>Paletas</span>
+        </button>
+        <button class="nav-item" data-target="weather">
+          <i data-lucide="cloud-sun"></i>
+          <span>Mi Clima</span>
+        </button>
+      </nav>
+      
+      <!-- Quick Info Weather Widget -->
+      <div class="sidebar-weather-widget" id="sidebarWeatherWidget">
+        <div class="weather-widget-header">
+          <span class="weather-widget-title">Clima Adaptativo</span>
+          <span class="weather-badge" id="weatherBadge">Demo Mode</span>
+        </div>
+        <div class="weather-widget-content">
+          <div class="weather-icon-temp">
+            <i data-lucide="cloud" class="widget-icon" id="widgetWeatherIcon"></i>
+            <span class="widget-temp" id="widgetTemp">20°C</span>
+          </div>
+          <div class="weather-widget-city" id="widgetCity">Detectando...</div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Cambiar tema">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+          <span>Tema</span>
+        </button>
+        <button class="settings-btn" id="openSettingsBtn" title="Configurar APIs">
+          <i data-lucide="settings"></i>
+          <span>Ajustes</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <div class="brand-logo">
+        <i data-lucide="sparkles" class="logo-icon"></i>
+        <span>Design<span class="highlight">Hub</span></span>
+      </div>
+      <div class="mobile-actions">
+        <button class="theme-toggle-btn icon-only" id="themeToggleBtnMobile">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+        <button class="settings-btn icon-only" id="openSettingsBtnMobile">
+          <i data-lucide="settings"></i>
+        </button>
+        <button class="menu-toggle-btn" id="menuToggleBtn">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      
+      <!-- Notification Bar / Demo alert -->
+      <div class="notification-banner" id="demoBanner">
+        <div class="banner-content">
+          <i data-lucide="info"></i>
+          <span>El buscador de imágenes está en <strong>Modo Demo</strong>. Agrega tu Unsplash Access Key en <a href="#" id="bannerSettingsLink">Ajustes</a> para buscar y descargar en tiempo real.</span>
+        </div>
+        <button class="banner-close" id="closeBannerBtn"><i data-lucide="x"></i></button>
+      </div>
+
+      <!-- PAGE: DASHBOARD -->
+      <div class="content-page active" id="page-dashboard">
+        <header class="page-header">
+          <div class="header-text">
+            <h1 class="page-title">Estudio Creativo</h1>
+            <p class="page-subtitle" id="dashboardGreeting">Hola de nuevo. El diseño se nutre de la inspiración diaria.</p>
+          </div>
+          <div class="current-date" id="currentDate">Jueves, 25 de Junio</div>
+        </header>
+
+        <!-- Dashboard Widgets Grid -->
+        <div class="dashboard-grid">
+          
+          <!-- Weather Theme Controller Summary Card -->
+          <article class="dash-card weather-summary-card">
+            <div class="card-glow"></div>
+            <div class="weather-summary-content">
+              <div class="summary-left">
+                <span class="summary-label">CLIMA ACTUAL</span>
+                <h2 class="summary-city" id="dashWeatherCity">Desconocido</h2>
+                <div class="summary-temp-wrapper">
+                  <span class="summary-temp" id="dashWeatherTemp">--°C</span>
+                  <span class="summary-desc" id="dashWeatherDesc">Buscando ubicación...</span>
+                </div>
+                <div class="summary-details">
+                  <div class="detail-item">
+                    <i data-lucide="droplets"></i>
+                    <span id="dashWeatherHum">Humedad: --%</span>
+                  </div>
+                  <div class="detail-item">
+                    <i data-lucide="wind"></i>
+                    <span id="dashWeatherWind">Viento: -- km/h</span>
+                  </div>
+                </div>
+              </div>
+              <div class="summary-right">
+                <div class="weather-anim-icon-container" id="dashWeatherAnimIcon">
+                  <i data-lucide="cloud" class="weather-giant-icon animate-pulse"></i>
+                </div>
+                <span class="theme-mood-tag" id="dashThemeMoodTag">Tema: Neutro</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Quick Palette Generator Mini Card -->
+          <article class="dash-card mini-palette-card">
+            <div class="card-header">
+              <div class="header-icon-title">
+                <i data-lucide="palette" class="card-icon text-accent"></i>
+                <h3>Paleta Rápida</h3>
+              </div>
+              <button class="btn-text-action" id="dashGenPaletteBtn">Generar otra</button>
+            </div>
+            <div class="mini-palette-container" id="dashPaletteGrid">
+              <!-- Dynamically populated mini palette -->
+              <div class="palette-loading-skeleton">
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+              </div>
+            </div>
+            <div class="mini-palette-footer">
+              <button class="btn btn-sm btn-outline" id="goToPalettesBtn">
+                <span>Ir al Módulo de Paletas</span>
+                <i data-lucide="arrow-right"></i>
+              </button>
+            </div>
+          </article>
+
+          <!-- Quick Inspiration Gallery Mini Card -->
+          <article class="dash-card mini-gallery-card">
+            <div class="card-header">
+              <div class="header-icon-title">
+                <i data-lucide="image" class="card-icon text-accent"></i>
+                <h3>Inspiración del Clima</h3>
+              </div>
+              <span class="dash-tag" id="dashWeatherSearchTerm">Soleado</span>
+            </div>
+            <div class="mini-gallery-grid" id="dashGalleryGrid">
+              <!-- Dynamically populated mini grid of images -->
+              <div class="skeleton-img"></div>
+              <div class="skeleton-img"></div>
+              <div class="skeleton-img"></div>
+            </div>
+            <div class="mini-palette-footer">
+              <button class="btn btn-sm btn-outline" id="goToGalleryBtn">
+                <span>Buscar más imágenes</span>
+                <i data-lucide="arrow-right"></i>
+              </button>
+            </div>
+          </article>
+
+          <!-- Designer Quotes Widget -->
+          <article class="dash-card quote-card">
+            <div class="quote-content">
+              <i data-lucide="quote" class="quote-icon"></i>
+              <blockquote id="quoteText">"El diseño no es solo lo que se ve y lo que se siente. El diseño es cómo funciona."</blockquote>
+              <cite id="quoteAuthor">— Steve Jobs</cite>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- PAGE: INSPIRATION (GALLERY) -->
+      <div class="content-page" id="page-inspiration">
+        <header class="page-header">
+          <div class="header-text">
+            <h1 class="page-title">Inspiración Visual</h1>
+            <p class="page-subtitle">Explora ideas y descarga imágenes de alta calidad de la comunidad mundial a través de Unsplash.</p>
+          </div>
+        </header>
+
+        <!-- Search Bar and Filters -->
+        <div class="filter-section">
+          <form class="search-bar" id="gallerySearchForm">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" placeholder="Buscar por palabra clave (ej. 'Minimalist', 'Branding', 'Interiors')..." id="gallerySearchInput" required>
+            <button type="submit" class="btn btn-primary search-btn">Buscar</button>
+          </form>
+          
+          <div class="tag-chips-container" id="tagChips">
+            <span class="chip active" data-tag="architecture">Arquitectura</span>
+            <span class="chip" data-tag="brutalism">Brutalismo</span>
+            <span class="chip" data-tag="ui ux">UI/UX</span>
+            <span class="chip" data-tag="minimalist">Minimalismo</span>
+            <span class="chip" data-tag="textures">Texturas</span>
+            <span class="chip" data-tag="neon">Luces de Neón</span>
+            <span class="chip" data-tag="nature">Naturaleza</span>
+          </div>
+        </div>
+
+        <!-- Gallery Grid Container -->
+        <div class="gallery-wrapper">
+          <div class="gallery-grid" id="pinterestGrid">
+            <!-- Dynamically populated cards with Pinterest effect -->
+          </div>
+          
+          <!-- Loading Indicator -->
+          <div class="loading-indicator hidden" id="galleryLoading">
+            <div class="spinner"></div>
+            <span>Buscando inspiración en Unsplash...</span>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state hidden" id="galleryEmptyState">
+            <i data-lucide="search-code"></i>
+            <h3>No encontramos resultados</h3>
+            <p>Prueba con otras palabras clave o comprueba tu conexión a internet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: PALETTES (COLOR API) -->
+      <div class="content-page" id="page-palettes">
+        <header class="page-header">
+          <div class="header-text">
+            <h1 class="page-title">Paletas de Colores</h1>
+            <p class="page-subtitle">Genera combinaciones cromáticas profesionales y consistentes con The Color API.</p>
+          </div>
+        </header>
+
+        <div class="palettes-panel">
+          <!-- Controls Column -->
+          <aside class="palette-controls">
+            <div class="control-group">
+              <label class="control-label" for="baseColorPicker">Color Semilla</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="baseColorPicker" value="#6366f1">
+                <input type="text" id="baseColorHex" value="#6366f1" placeholder="#6366F1" maxlength="7">
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <label class="control-label" for="schemeMode">Tipo de Armonía</label>
+              <select id="schemeMode" class="form-select">
+                <option value="monochrome">Monocromática (Sugerida)</option>
+                <option value="monochrome-dark">Monocromática Oscura</option>
+                <option value="monochrome-light">Monocromática Clara</option>
+                <option value="analogic">Analógica</option>
+                <option value="complement">Complementaria</option>
+                <option value="analogic-complement">Analógica Complementaria</option>
+                <option value="triad">Tríada</option>
+                <option value="quad">Tetrada / Cuadrado</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="colorCount">Número de Colores</label>
+              <div class="range-wrapper">
+                <input type="range" id="colorCount" min="3" max="8" value="5">
+                <span class="range-val" id="colorCountVal">5</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary w-full" id="generatePaletteBtn">
+              <i data-lucide="zap"></i>
+              <span>Generar Paleta</span>
+            </button>
+            
+            <button class="btn btn-outline w-full" id="exportPaletteCssBtn">
+              <i data-lucide="file-code"></i>
+              <span>Exportar como CSS</span>
+            </button>
+          </aside>
+
+          <!-- Results Column -->
+          <div class="palette-display-area">
+            <div class="palette-display-header">
+              <h3>Paleta Generada</h3>
+              <div class="palette-actions">
+                <button class="btn-icon-label" id="copyPaletteHexesBtn" title="Copiar todos los Hex">
+                  <i data-lucide="copy"></i>
+                  <span>Copiar Todos</span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Result Colors Container -->
+            <div class="palette-results-grid" id="paletteResultGrid">
+              <!-- Dynamically populated color columns -->
+            </div>
+
+            <!-- Loading Indicator for colors -->
+            <div class="palette-loader hidden" id="paletteLoader">
+              <div class="spinner"></div>
+              <span>Calculando armonías de colores...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: WEATHER DETAILS -->
+      <div class="content-page" id="page-weather">
+        <header class="page-header">
+          <div class="header-text">
+            <h1 class="page-title">Módulo de Clima Adaptativo</h1>
+            <p class="page-subtitle">Nuestra interfaz cambia dinámicamente según las condiciones meteorológicas del usuario.</p>
+          </div>
+        </header>
+
+        <div class="weather-detail-layout">
+          
+          <!-- Left Column: Search & Analytics -->
+          <div class="weather-left-col">
+            
+            <!-- Search City/Country -->
+            <article class="weather-search-card">
+              <form class="search-bar" id="weatherSearchForm">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" placeholder="Buscar clima por ciudad o país (ej. 'Tokio', 'París', 'México')..." id="weatherSearchInput" required>
+                <button type="submit" class="btn btn-primary search-btn">Buscar Clima</button>
+              </form>
+            </article>
+
+            <!-- Full Weather Analytics Card -->
+            <article class="weather-dashboard-card">
+              <div class="weather-glass-card">
+                <div class="weather-glass-header">
+                  <div>
+                    <h2 class="weather-city-name" id="detCityName">Detectando Ciudad...</h2>
+                    <p class="weather-coordinates" id="detCoordinates">Lat: 0.00 | Lon: 0.00</p>
+                  </div>
+                  <span class="weather-status-badge" id="detStatusBadge">Estado</span>
+                </div>
+
+                <div class="weather-glass-main">
+                  <div class="weather-visual">
+                    <div class="weather-animated-icon" id="detWeatherIconContainer">
+                      <!-- Dynamic weather icon -->
+                      <i data-lucide="cloud-sun" class="weather-giant-icon"></i>
+                    </div>
+                    <div class="weather-temp-main">
+                      <span class="temp-number" id="detTemp">--</span>
+                      <span class="temp-unit">°C</span>
+                    </div>
+                  </div>
+                  <div class="weather-phrase" id="detWeatherDesc">Buscando satélites del clima local...</div>
+                </div>
+
+                <div class="weather-glass-stats">
+                  <div class="stat-card">
+                    <i data-lucide="droplets" class="stat-icon text-accent"></i>
+                    <div class="stat-info">
+                      <span class="stat-label">Humedad</span>
+                      <span class="stat-value" id="detHumidity">--%</span>
+                    </div>
+                  </div>
+                  <div class="stat-card">
+                    <i data-lucide="wind" class="stat-icon text-accent"></i>
+                    <div class="stat-info">
+                      <span class="stat-label">Viento</span>
+                      <span class="stat-value" id="detWind">-- km/h</span>
+                    </div>
+                  </div>
+                  <div class="stat-card">
+                    <i data-lucide="thermometer" class="stat-icon text-accent"></i>
+                    <div class="stat-info">
+                      <span class="stat-label">Sensación Térmica</span>
+                      <span class="stat-value" id="detFeelsLike">--°C</span>
+                    </div>
+                  </div>
+                  <div class="stat-card">
+                    <i data-lucide="compass" class="stat-icon text-accent"></i>
+                    <div class="stat-info">
+                      <span class="stat-label">Presión</span>
+                      <span class="stat-value" id="detPressure">-- hPa</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Theme info & testing controls -->
+          <article class="weather-explanation-card">
+            <h3>¿Cómo funciona el Clima Adaptativo?</h3>
+            <p>La plataforma interactúa directamente con las APIs públicas globales de <strong>Open-Meteo</strong> y <strong>OpenStreetMap Nominatim</strong> para obtener el clima y nombre de tu ubicación actual mediante el navegador, ¡sin requerir ninguna clave de API! Al procesar el estado climático, inyecta clases en el elemento raíz para adaptar las variables CSS globales y rediseñar los colores del sitio.</p>
+            
+            <div class="alert-info">
+              <i data-lucide="info"></i>
+              <span>El tema adaptativo cambia las variables de gradientes y colores de énfasis (`--accent-color`) para reflejar los estados naturales.</span>
+            </div>
+
+            <div class="theme-tester-section">
+              <h4>Prueba y Fuerza Temas de Clima</h4>
+              <p class="tester-intro">¿Quieres ver cómo cambia el diseño sin esperar a que llueva? Elige un clima para forzar la interfaz:</p>
+              <div class="theme-buttons-grid">
+                <button class="theme-test-btn" data-weather="sunny">
+                  <i data-lucide="sun" class="sun"></i>
+                  <span>Soleado / Despejado</span>
+                </button>
+                <button class="theme-test-btn" data-weather="cloudy">
+                  <i data-lucide="cloud" class="cloudy"></i>
+                  <span>Nublado / Niebla</span>
+                </button>
+                <button class="theme-test-btn" data-weather="rainy">
+                  <i data-lucide="cloud-rain" class="rainy"></i>
+                  <span>Lluvioso</span>
+                </button>
+                <button class="theme-test-btn" data-weather="snowy">
+                  <i data-lucide="snowflake" class="snowy"></i>
+                  <span>Nieve</span>
+                </button>
+                <button class="theme-test-btn" data-weather="stormy">
+                  <i data-lucide="cloud-lightning" class="stormy"></i>
+                  <span>Tormenta</span>
+                </button>
+                <button class="theme-test-btn" data-weather="reset">
+                  <i data-lucide="refresh-cw"></i>
+                  <span>Restablecer Local</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL: SETTINGS (API KEYS) -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Configuración de API Keys</h3>
+        <button class="close-modal-btn" id="closeSettingsBtn"><i data-lucide="x"></i></button>
+      </div>
+      <form id="settingsForm">
+        <div class="modal-body">
+          <p class="modal-description">Introduce tus credenciales para conectar las APIs reales. Las llaves se almacenan de forma local en tu navegador (`localStorage`) y nunca se envían a servidores externos.</p>
+          
+          <div class="form-group">
+            <label for="unsplashKeyInput">Unsplash Access Key (Imágenes)</label>
+            <input type="password" id="unsplashKeyInput" placeholder="Pega tu Unsplash Access Key aquí...">
+            <span class="help-text">Regístrate como desarrollador en <a href="https://unsplash.com/developers" target="_blank" rel="noopener">unsplash.com/developers</a>. El clima está automatizado mundialmente y no requiere clave.</span>
+          </div>
+
+          <div class="alert-warning-simple">
+            <i data-lucide="shield-check"></i>
+            <span>Si dejas las llaves en blanco, la plataforma utilizará de forma inteligente datos simulados integrados (Demo Mode) para no interrumpir tu flujo de prueba.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="clearKeysBtn">Limpiar Todo</button>
+          <div class="footer-actions">
+            <button type="button" class="btn btn-text" id="cancelSettingsBtn">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: LIGHTBOX (GALLERY ENLARGED) -->
+  <div class="modal-overlay" id="lightboxModal">
+    <button class="lightbox-close-btn" id="closeLightboxBtn"><i data-lucide="x"></i></button>
+    
+    <div class="lightbox-content">
+      <img src="" alt="Vista ampliada de la imagen" class="lightbox-img" id="lightboxImg">
+      
+      <div class="lightbox-meta">
+        <div class="lightbox-author-details">
+          <img src="" alt="Autor" class="author-avatar" id="lightboxAuthorAvatar">
+          <div class="author-info">
+            <span class="author-name" id="lightboxAuthorName">Nombre Autor</span>
+            <a href="#" target="_blank" rel="noopener" class="author-username" id="lightboxAuthorLink">@usuario</a>
+          </div>
+        </div>
+        
+        <div class="lightbox-actions">
+          <button class="btn btn-sm btn-outline" id="lightboxCopyLinkBtn">
+            <i data-lucide="link"></i>
+            <span>Copiar Link</span>
+          </button>
+          <a href="#" target="_blank" download rel="noopener" class="btn btn-sm btn-primary" id="lightboxDownloadBtn">
+            <i data-lucide="download"></i>
+            <span>Descargar</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIPBOARD TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- JavaScript Modules initialization -->
+  <script src="weather.js"></script>
+  <script src="gallery.js"></script>
+  <script src="colors.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
